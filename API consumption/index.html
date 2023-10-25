@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Store</title>
+    <h4>Game list</h4>
+    <ul id="games"></ul>
+    <hr />
+
+    <h4>New game</h4>
+    <input type="text" id="title" placeholder="title" />
+    <input type="number" id="year" placeholder="year" />
+    <input type="number" id="price" placeholder="price" />
+    <button type="button" onclick="createGame()">Create</button>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+      function createGame() {
+        const titleInput = document.querySelector("#title");
+        const yearInput = document.querySelector("#year");
+        const priceInput = document.querySelector("#price");
+
+        const game = {
+          title: titleInput.value,
+          year: yearInput.value,
+          price: priceInput.value,
+        };
+
+        axios
+          .post("http://localhost:3333/game", game)
+          .then((res) => {
+            console.log(res);
+            if (res.status == 201) {
+              window.location.reload();
+              //alert("Registered game!");
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+
+      axios
+        .get("http://localhost:3333/games")
+        .then((res) => {
+          const games = res.data;
+          const list = document.querySelector("#games");
+
+          games.forEach((game) => {
+            const item = document.createElement("li");
+            item.innerHTML = `${game.id} - ${game.title} - ${game.price}R$`;
+            list.appendChild(item);
+          });
+        })
+        .catch((err) => console.log(err));
+    </script>
+  </body>
+</html>
