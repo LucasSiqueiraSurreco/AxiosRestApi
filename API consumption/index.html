@@ -15,76 +15,15 @@
     <input type="number" id="year" placeholder="year" />
     <input type="number" id="price" placeholder="price" />
     <button type="button" onclick="createGame()">Create</button>
+    <hr />
+    <h4>Edit game</h4>
+    <input type="text" id="idEdit" placeholder="ID" readonly /><br />
+    <input type="text" id="titleEdit" placeholder="Title" /><br />
+    <input type="number" id="yearEdit" placeholder="Year" /><br />
+    <input type="number" id="priceEdit" placeholder="Price" /><br />
+    <button type="button" onclick="updateGame()">Edit</button>
 
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
-    <script>
-      function createGame() {
-        const titleInput = document.querySelector("#title");
-        const yearInput = document.querySelector("#year");
-        const priceInput = document.querySelector("#price");
-
-        const game = {
-          title: titleInput.value,
-          year: yearInput.value,
-          price: priceInput.value,
-        };
-
-        axios
-          .post("http://localhost:3333/game", game)
-          .then((res) => {
-            console.log(res);
-            if (res.status == 201) {
-              window.location.reload();
-              //alert("Registered game!");
-            }
-          })
-          .catch((err) => console.log(err));
-      }
-
-      document.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-          createGame();
-        }
-      });
-
-      function deleteGame(listItem) {
-        const id = listItem.getAttribute("data-id");
-        axios
-          .delete("http://localhost:3333/game/" + id)
-          .then((res) => {
-            window.location.reload();
-            alert("Deleted Game");
-          })
-          .catch((err) => console.log(err));
-      }
-
-      axios
-        .get("http://localhost:3333/games")
-        .then((res) => {
-          const games = res.data;
-          const list = document.querySelector("#games");
-
-          games.forEach((game) => {
-            const item = document.createElement("li");
-            item.setAttribute("data-id", game.id);
-            item.setAttribute("data-title", game.title);
-            item.setAttribute("data-year", game.year);
-            item.setAttribute("data-price", game.price);
-
-            item.innerHTML = `${game.id} - ${game.title} - ${game.price}R$`;
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.innerHTML = "Delete";
-            deleteBtn.addEventListener("click", function () {
-              deleteGame(item);
-            });
-
-            item.appendChild(deleteBtn);
-
-            list.appendChild(item);
-          });
-        })
-        .catch((err) => console.log(err));
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>
