@@ -8,11 +8,7 @@ app.use(bodyParser.json());
 app.use(cors());
 
 const DB = {
-  games: [
-    { id: 1, title: "BF5", year: 2020, price: 120 },
-    { id: 2, title: "EFT", year: 2016, price: 270 },
-    { id: 3, title: "ARK", year: 2015, price: 450 },
-  ],
+  games: [],
 };
 
 app.get("/games", (req, res) => {

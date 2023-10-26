@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Game Store</title>
+  </head>
+  <body>
     <h4>Game list</h4>
     <ul id="games"></ul>
     <hr />
@@ -13,8 +15,7 @@
     <input type="number" id="year" placeholder="year" />
     <input type="number" id="price" placeholder="price" />
     <button type="button" onclick="createGame()">Create</button>
-  </head>
-  <body>
+
     <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
     <script>
       function createGame() {
@@ -40,6 +41,23 @@
           .catch((err) => console.log(err));
       }
 
+      document.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          createGame();
+        }
+      });
+
+      function deleteGame(listItem) {
+        const id = listItem.getAttribute("data-id");
+        axios
+          .delete("http://localhost:3333/game/" + id)
+          .then((res) => {
+            window.location.reload();
+            alert("Deleted Game");
+          })
+          .catch((err) => console.log(err));
+      }
+
       axios
         .get("http://localhost:3333/games")
         .then((res) => {
@@ -48,7 +66,21 @@
 
           games.forEach((game) => {
             const item = document.createElement("li");
+            item.setAttribute("data-id", game.id);
+            item.setAttribute("data-title", game.title);
+            item.setAttribute("data-year", game.year);
+            item.setAttribute("data-price", game.price);
+
             item.innerHTML = `${game.id} - ${game.title} - ${game.price}R$`;
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.innerHTML = "Delete";
+            deleteBtn.addEventListener("click", function () {
+              deleteGame(item);
+            });
+
+            item.appendChild(deleteBtn);
+
             list.appendChild(item);
           });
         })
