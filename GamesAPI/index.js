@@ -1,6 +1,11 @@
 import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
+
+const jwtSecret = process.env.JWT_SECRET;
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -9,6 +14,10 @@ app.use(cors());
 
 const DB = {
   games: [],
+  users: [
+    { id: 1, name: "Lucas", email: "lucas@gmail.com", password: "12345" },
+    { id: 20, name: "V", email: "v@gmail.com", password: "12345" },
+  ],
 };
 
 app.get("/games", (req, res) => {
@@ -84,6 +93,26 @@ app.put("/game/:id", (req, res) => {
     } else {
       res.sendStatus(404);
     }
+  }
+});
+
+// Users
+app.post("/auth", (req, res) => {
+  const { email, password } = req.body;
+  if (email !== undefined) {
+    const user = DB.users.find((user) => user.email === email);
+    if (user !== undefined) {
+      if (user.password == password) {
+        jwt.sign({ id: user.id, email: user.email }, jwtSecret);
+        res.status(200).json({ token: "FAKE TOKEN" });
+      } else {
+        res.status(401).json({ err: "Wrong credentials" });
+      }
+    } else {
+      res.status(404).json({ err: "E-mail not found" });
+    }
+  } else {
+    res.status(400).json({ err: "Invalid e-mail" });
   }
 });
 
