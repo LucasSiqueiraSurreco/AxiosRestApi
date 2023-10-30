@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import jwt from "jsonwebtoken";
+import { auth } from "./middleware/auth.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -11,9 +12,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+app.use(auth);
 
 const DB = {
-  games: [],
+  games: [{ id: 1, title: "code", year: 1021 }],
   users: [
     { id: 1, name: "Lucas", email: "lucas@gmail.com", password: "12345" },
     { id: 20, name: "V", email: "v@gmail.com", password: "12345" },
@@ -103,8 +105,20 @@ app.post("/auth", (req, res) => {
     const user = DB.users.find((user) => user.email === email);
     if (user !== undefined) {
       if (user.password == password) {
-        jwt.sign({ id: user.id, email: user.email }, jwtSecret);
-        res.status(200).json({ token: "FAKE TOKEN" });
+        jwt.sign(
+          { id: user.id, email: user.email },
+          jwtSecret,
+          {
+            expiresIn: "48h",
+          },
+          (err, token) => {
+            if (err) {
+              res.status(400).json({ err: "Internal error" });
+            } else {
+              res.status(200).json({ token: token });
+            }
+          }
+        );
       } else {
         res.status(401).json({ err: "Wrong credentials" });
       }
